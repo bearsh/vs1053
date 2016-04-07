@@ -1,0 +1,19 @@
+{
+  "name": "vs1053b",
+  "version": "0.0.0",
+  "description": "bla",
+  "keywords": [
+    "mp3",
+    "vlsi"
+  ],
+  "author": "various",
+  "repository": {
+    "url": "git@github.com:bearsh/vs1053b.git",
+    "type": "git"
+  },
+  "homepage": "https://github.com/bearsh/vs1053b",
+  "license": "MIT",
+  "dependencies": {
+    "mbed-drivers": "^1.0.0"
+  }
+}
