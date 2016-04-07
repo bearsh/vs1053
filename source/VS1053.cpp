@@ -26,8 +26,7 @@
  *  2010-10-16
  */
 
-#include "VS1053.h"
-#include "mbed.h"
+#include "vs1053/VS1053.h"
 
 // patch binarys
 #include "Patches/VS1053b_patch_1_5.c"

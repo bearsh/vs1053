@@ -29,7 +29,7 @@
 #ifndef _VS1053_H
 #define _VS1053_H
 
-#include "mbed.h"
+#include "mbed-drivers/mbed.h"
 
 // ----------------------------------------------------------------------------
 // Extended settings
@@ -52,8 +52,7 @@
 
 
 #ifdef DEBUG
-#include "Serial.h"
-extern Serial ser;
+extern RawSerial ser;
 #define DEBUGOUT(...)    ser.printf(__VA_ARGS__)
 #else
 #define DEBUGOUT(...)
