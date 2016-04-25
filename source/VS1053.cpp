@@ -436,7 +436,7 @@ bool VS1053::initialize(void) {
 	sdi_initialise();
 	changeVolume();
 	changeBass();
-	is_idle = true;
+	mode = STOP;
 	return true;
 }
 
@@ -644,8 +644,7 @@ void VS1053::bufferReset(void) {
 }
 
 void VS1053::dataRequestHandler(void) {
-	if (is_idle && pin_dreq) {
-		is_idle = false;
+	if (pin_dreq && (mode == PLAY)) {
 		// write buffer to vs1053b
 		unsigned length = bufferCount();
 		int i = 0;
@@ -667,7 +666,9 @@ void VS1053::dataRequestHandler(void) {
 
 		sdi_dis();
 
-		is_idle = true;
+		if (pin_dreq) {
+			minar::Scheduler::postCallback(data_request_event).tolerance(minar::milliseconds(1)); //.delay(minar::milliseconds(1));
+		}
 	}
 }
 
@@ -676,20 +677,23 @@ void VS1053::dataRequestInterruptHandler(void) {
 }
 
 void VS1053::play(void) {
+	mode = PLAY;
 	interrupt_enable();
+	minar::Scheduler::postCallback(data_request_event);
 	DEBUGOUT("VS1053b: Play.\r\n");
 }
 
 void VS1053::pause(void) {
+	mode = PAUSE;
 	interrupt_disable();
 	DEBUGOUT("VS1053b: Pause.\r\n");
 }
 
 void VS1053::stop(void) {
+	mode = STOP;
 	interrupt_disable();
 	__disable_irq();
 	DEBUGOUT("VS1053b: Song stoping..\r\n");
-	while (!is_idle) {;}
 
 	// set SCI MODE bit SM CANCEL
 	uint16_t sciModeByte = sci_read(SCI_MODE);

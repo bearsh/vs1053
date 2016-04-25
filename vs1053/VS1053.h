@@ -438,8 +438,6 @@ protected:
 	char* buffer_wptr;
 	size_t buffer_size;
 
-	bool is_idle;
-
 	// variables to save
 	// volume, values in db
 	float balance;
@@ -454,6 +452,8 @@ protected:
 	minar::callback_t data_request_event;
 
 	static const char sampleRateTable[4][4];  // _sampleRateTable[id][srate]
+
+	enum mode {STOP, PAUSE, PLAY} mode;
 
 	uint16_t wram_read(uint16_t);
 	void wram_write(uint16_t, uint16_t);
