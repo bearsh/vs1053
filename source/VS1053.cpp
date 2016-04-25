@@ -137,13 +137,11 @@ VS1053::VS1053(PinName mosi, PinName miso, PinName sck, PinName cs, PinName rst,
  *==================================================================*/
 
 inline void VS1053::interrupt_enable(void) {
-	timer.attach_us(this, &VS1053::dataRequestHandler, 1000);
 	interrupt_dreq.rise(this, &VS1053::dataRequestInterruptHandler);
 }
 
 inline void VS1053::interrupt_disable(void) {
 	interrupt_dreq.rise(NULL);
-	timer.detach();
 }
 
 inline void VS1053::cs_low(void) {

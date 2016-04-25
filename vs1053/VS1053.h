@@ -448,7 +448,6 @@ protected:
 	int st_amplitude;
 	int st_freqlimit;
 
-	Ticker timer;
 	minar::callback_t data_request_event;
 
 	static const char sampleRateTable[4][4];  // _sampleRateTable[id][srate]
