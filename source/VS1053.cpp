@@ -644,7 +644,7 @@ void VS1053::bufferReset(void) {
 void VS1053::dataRequestHandler(void) {
 	if (pin_dreq && (mode == PLAY)) {
 		// write buffer to vs1053b
-		unsigned length = bufferCount();
+		size_t length = bufferCount();
 		int i = 0;
 		sdi_en();
 
