@@ -644,30 +644,34 @@ void VS1053::bufferReset(void) {
 void VS1053::dataRequestHandler(void) {
 	if (pin_dreq && (mode == PLAY)) {
 		// write buffer to vs1053b
-		size_t length = bufferCount();
 		int i = 0;
+		char *ptr;
+		bool ma;
+
 		sdi_en();
+		do {
+			size_t len = bufferGetRPtr(&ptr, &ma);
+			while (len) {
+				size_t l2 = (len > 32) ? 32 : len;
+				for (unsigned j = 0; j < l2; ++j) {
+					port_spi.write(*ptr++);
+				}
+				bufferUpdateRPtr(l2);
 
-		while (length > 0) {
-			int l2 = (length > 32) ? 32 : length;
-			//DEBUGOUT("L2: %i\r\n", l2);
-			for (; l2 != 0; l2--) {
-				port_spi.write(bufferGetByte());
+				if (!pin_dreq || i++ > 4) {
+					goto stopTranfer;
+				}
+				len -= l2;
 			}
-
-			length -= l2;
-
-			if (!pin_dreq || i > 4)
-				break;
-			i++;
-		}
-
+		} while (ma);
+stopTranfer:
 		sdi_dis();
 
 		if (pin_dreq) {
-			minar::Scheduler::postCallback(data_request_event).tolerance(minar::milliseconds(1)); //.delay(minar::milliseconds(1));
+			minar::Scheduler::postCallback(data_request_event).tolerance(minar::milliseconds(1));
 		}
 	}
+
 }
 
 void VS1053::dataRequestInterruptHandler(void) {
