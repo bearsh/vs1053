@@ -118,7 +118,8 @@ VS1053::VS1053(PinName mosi, PinName miso, PinName sck, PinName cs, PinName rst,
 		pin_dreq(dreq),
 		interrupt_dreq(dreq),
 		buffer(buf),
-		buffer_size(buf_size)
+		buffer_size(buf_size),
+		data_request_event(mbed::util::FunctionPointer0<void>(this, &VS1053::dataRequestHandler).bind())
 {
 	volume = DEFAULT_VOLUME;
 	balance = DEFAULT_BALANCE_DIFERENCE_LEFT_RIGHT;
@@ -136,8 +137,8 @@ VS1053::VS1053(PinName mosi, PinName miso, PinName sck, PinName cs, PinName rst,
  *==================================================================*/
 
 inline void VS1053::interrupt_enable(void) {
-	interrupt_dreq.rise(this, &VS1053::dataRequestHandler);
 	timer.attach_us(this, &VS1053::dataRequestHandler, 1000);
+	interrupt_dreq.rise(this, &VS1053::dataRequestInterruptHandler);
 }
 
 inline void VS1053::interrupt_disable(void) {
@@ -668,6 +669,10 @@ void VS1053::dataRequestHandler(void) {
 
 		is_idle = true;
 	}
+}
+
+void VS1053::dataRequestInterruptHandler(void) {
+	minar::Scheduler::postCallback(data_request_event).tolerance(minar::milliseconds(1));
 }
 
 void VS1053::play(void) {
