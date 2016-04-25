@@ -551,6 +551,25 @@ size_t VS1053::bufferLength(void) {
 	return buffer_size;
 }
 
+size_t VS1053::bufferGetWPtr(char **wptr, bool *more_available) {
+	*wptr = buffer_wptr;
+	size_t till_end = buffer + buffer_size - buffer_wptr;
+	size_t free = bufferFree();
+	if (free > till_end) {
+		*more_available = true;
+		return till_end;
+	}
+	*more_available = false;
+	return free;
+}
+
+void VS1053::bufferUpdateWPtr(size_t delta) {
+	buffer_wptr += delta;
+	if (buffer_wptr >= buffer + buffer_size) {
+		buffer_wptr -= buffer_size;
+	}
+}
+
 uint8_t VS1053::bufferGetByte(void) {
 	uint8_t retVal = 0x00;
 	if (bufferCount() > 0x00) {
@@ -560,6 +579,25 @@ uint8_t VS1053::bufferGetByte(void) {
 		}
 	}
 	return retVal;
+}
+
+size_t VS1053::bufferGetRPtr(char **rptr, bool *more_available) {
+	*rptr = buffer_rptr;
+	size_t till_end = buffer + buffer_size - buffer_rptr;
+	size_t count = bufferCount();
+	if (count > till_end) {
+		*more_available = true;
+		return till_end;
+	}
+	*more_available = false;
+	return count;
+}
+
+void VS1053::bufferUpdateRPtr(size_t delta) {
+	buffer_rptr += delta;
+	if (buffer_rptr >= buffer + buffer_size) {
+		buffer_rptr -= buffer_size;
+	}
 }
 
 bool VS1053::bufferSetByte(char c) {

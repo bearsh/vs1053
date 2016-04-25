@@ -363,6 +363,44 @@ public:
 	 */
 	size_t bufferLength(void);
 
+	/** Get the write pointer of the buffer
+	 *
+	 * @param wptr
+	 *   Pointer to pointer to store the buffer's write pointer
+	 * @param more_available
+	 *   As the ringbuffer my wrap, more data may be available
+	 *   (call this function again)
+	 * @return
+	 *   Length of consecutive data
+	 */
+	size_t bufferGetWPtr(char **wptr, bool *more_available);
+
+	/** Update the internal write pointer
+	 *
+	 * @param delta
+	 *   Number of bytes to update the internal buffer
+	 */
+	void bufferUpdateWPtr(size_t delta);
+
+	/** Get the read pointer of the buffer
+	 *
+	 * @param wptr
+	 *   Pointer to pointer to store the buffer's read pointer
+	 * @param more_available
+	 *   As the ringbuffer my wrap, more space may be available
+	 *   (call this function again)
+	 * @return
+	 *   Length of consecutive data
+	 */
+	size_t bufferGetRPtr(char **rptr, bool *more_available);
+
+	/** Update the internal read pointer
+	 *
+	 * @param delta
+	 *   Number of bytes to update the internal buffer
+	 */
+	void bufferUpdateRPtr(size_t delta);
+
 	/** Start playing audio from buffer.
 	 *
 	 */
