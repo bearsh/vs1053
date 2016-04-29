@@ -332,7 +332,7 @@ void VS1053::setPlaySpeed(uint16_t speed) {
 }
 
 void VS1053::terminateStream(void) {
-	while (bufferCount() > 0) {;}
+	bufferWriteToChip();
 
 	DEBUGOUT("VS1053b: Song terminating..\r\n");
 	// send at least 2052 bytes of endFillByte[7:0].
