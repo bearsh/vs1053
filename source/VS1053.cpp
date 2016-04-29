@@ -328,13 +328,13 @@ void VS1053::wram_write(uint16_t address, uint16_t data) {
 
 void VS1053::setPlaySpeed(uint16_t speed) {
 	wram_write(para_playSpeed, speed);
-	DEBUGOUT("VS1053b: Change speed. New speed: %d\r\n", speed);
+	DEBUGOUT("VS1053b: Change speed. New speed: %d\n", speed);
 }
 
 void VS1053::terminateStream(void) {
 	bufferWriteToChip();
 
-	DEBUGOUT("VS1053b: Song terminating..\r\n");
+	DEBUGOUT("VS1053b: Song terminating..\n");
 	// send at least 2052 bytes of endFillByte[7:0].
 	// read endFillByte  (0 .. 15) from wram
 	uint16_t endFillByte = wram_read(para_endFillByte);
@@ -361,11 +361,11 @@ void VS1053::terminateStream(void) {
 	}
 
 	if ((sciModeByte & SM_CANCEL) == 0x0000) {
-		DEBUGOUT("VS1053b: Song sucessfully sent. Terminating OK\r\n");
-		DEBUGOUT("VS1053b: SCI MODE = %#x, SM_CANCEL = %#x\r\n", sciModeByte, sciModeByte & SM_CANCEL);
+		DEBUGOUT("VS1053b: Song sucessfully sent. Terminating OK\n");
+		DEBUGOUT("VS1053b: SCI MODE = %#x, SM_CANCEL = %#x\n", sciModeByte, sciModeByte & SM_CANCEL);
 		sci_write(SCI_DECODE_TIME, 0x0000);
 	} else {
-		DEBUGOUT("VS1053b: SM CANCEL hasn't cleared after sending 2048 bytes, do software reset\r\n");DEBUGOUT("VS1053b: SCI MODE = %#x, SM_CANCEL = %#x\r\n", sciModeByte, sciModeByte & SM_CANCEL);
+		DEBUGOUT("VS1053b: SM CANCEL hasn't cleared after sending 2048 bytes, do software reset\n");DEBUGOUT("VS1053b: SCI MODE = %#x, SM_CANCEL = %#x\n", sciModeByte, sciModeByte & SM_CANCEL);
 		initialize();
 	}
 }
@@ -404,18 +404,18 @@ bool VS1053::initialize(void) {
 
 #ifdef DEBUG    
 	size_t info = wram_read(para_chipID_0);
-	DEBUGOUT("VS1053b: ChipID_0:%04X\r\n", info);
+	DEBUGOUT("VS1053b: ChipID_0:%04X\n", info);
 	info = wram_read(para_chipID_1);
-	DEBUGOUT("VS1053b: ChipID_1:%04X\r\n", info);
+	DEBUGOUT("VS1053b: ChipID_1:%04X\n", info);
 	info = wram_read(para_version);
-	DEBUGOUT("VS1053b: Structure version:%04X\r\n", info);
+	DEBUGOUT("VS1053b: Structure version:%04X\n", info);
 #endif
 
 	//get chip version, set clock multiplier and load patch
 	int i = (sci_read(SCI_STATUS) & 0xF0) >> 4;
 	if (i == 4) {
 
-		DEBUGOUT("VS1053b: Installed Chip is: VS1053\r\n");
+		DEBUGOUT("VS1053b: Installed Chip is: VS1053\n");
 
 		sci_write(SCI_CLOCKF, (SC_MULT_XTALIx50));
 		wait_ms(10);
@@ -423,12 +423,12 @@ bool VS1053::initialize(void) {
 		// loading patch
 		write_plugin(vs1053b_patch, sizeof(vs1053b_patch)/2);
 
-		DEBUGOUT("VS1053b: Patch is loaded.\r\n");
-		DEBUGOUT("VS1053b: Patch size:%d bytes\r\n",sizeof(vs1053b_patch));
+		DEBUGOUT("VS1053b: Patch is loaded.\n");
+		DEBUGOUT("VS1053b: Patch size:%d bytes\n",sizeof(vs1053b_patch));
 
 #endif // VS_PATCH
 	} else {
-		DEBUGOUT("VS1053b: Not Supported Chip\r\n");
+		DEBUGOUT("VS1053b: Not Supported Chip\n");
 		return false;
 	}
 
@@ -470,7 +470,7 @@ void VS1053::changeVolume(void) {
 
 	sci_write(SCI_VOL, volCalced);
 
-	DEBUGOUT("VS1053b: Change volume to %#x (%f, Balance = %f)\r\n", volCalced, volume, balance);
+	DEBUGOUT("VS1053b: Change volume to %#x (%f, Balance = %f)\n", volCalced, volume, balance);
 }
 
 int VS1053::getTrebleFrequency(void) {
@@ -540,8 +540,8 @@ void VS1053::changeBass(void) {
 
 	sci_write(SCI_BASS, bassCalced);
 
-	DEBUGOUT("VS1053b: Change bass settings to:\r\n");
-	DEBUGOUT("VS1053b: --Treble: Amplitude=%i, Frequency=%i\r\n", getTrebleAmplitude(), getTrebleFrequency()); DEBUGOUT("VS1053b: --Bass:   Amplitude=%i, Frequency=%i\r\n", getBassAmplitude(), getBassFrequency());
+	DEBUGOUT("VS1053b: Change bass settings to:\n");
+	DEBUGOUT("VS1053b: --Treble: Amplitude=%i, Frequency=%i\n", getTrebleAmplitude(), getTrebleFrequency()); DEBUGOUT("VS1053b: --Bass:   Amplitude=%i, Frequency=%i\n", getBassAmplitude(), getBassFrequency());
 }
 
 /*===================================================================
@@ -704,20 +704,20 @@ void VS1053::play(void) {
 	bufferFillEventPosted = false;
 	bufferPostFillEvent();
 	minar::Scheduler::postCallback(data_request_event);
-	DEBUGOUT("VS1053b: Play.\r\n");
+	DEBUGOUT("VS1053b: Play.\n");
 }
 
 void VS1053::pause(void) {
 	mode = PAUSE;
 	interrupt_disable();
-	DEBUGOUT("VS1053b: Pause.\r\n");
+	DEBUGOUT("VS1053b: Pause.\n");
 }
 
 void VS1053::stop(void) {
 	mode = STOP;
 	interrupt_disable();
 	__disable_irq();
-	DEBUGOUT("VS1053b: Song stoping..\r\n");
+	DEBUGOUT("VS1053b: Song stoping..\n");
 
 	// set SCI MODE bit SM CANCEL
 	uint16_t sciModeByte = sci_read(SCI_MODE);
@@ -748,10 +748,10 @@ void VS1053::stop(void) {
 		endFillByte = endFillByte ^ 0x00FF;
 		for (int n = 0; n < 2052; n++)
 			sdi_write(endFillByte);
-		DEBUGOUT("VS1053b: Song sucessfully stopped.\r\n"); DEBUGOUT("VS1053b: SCI MODE = %#x, SM_CANCEL = %#x\r\n", sciModeByte, sciModeByte & SM_CANCEL);
+		DEBUGOUT("VS1053b: Song sucessfully stopped.\n"); DEBUGOUT("VS1053b: SCI MODE = %#x, SM_CANCEL = %#x\n", sciModeByte, sciModeByte & SM_CANCEL);
 		sci_write(SCI_DECODE_TIME, 0x0000);
 	} else {
-		DEBUGOUT("VS1053b: SM CANCEL hasn't cleared after sending 2048 bytes, do software reset\r\n"); DEBUGOUT("VS1053b: SCI MODE = %#x, SM_CANCEL = %#x\r\n", sciModeByte, sciModeByte & SM_CANCEL);
+		DEBUGOUT("VS1053b: SM CANCEL hasn't cleared after sending 2048 bytes, do software reset\n"); DEBUGOUT("VS1053b: SCI MODE = %#x, SM_CANCEL = %#x\n", sciModeByte, sciModeByte & SM_CANCEL);
 		initialize();
 	}
 
@@ -764,7 +764,7 @@ void VS1053::getAudioInfo(AudioInfo* aInfo) {
 	uint16_t hdat0 = sci_read(SCI_HDAT0);
 	uint16_t hdat1 = sci_read(SCI_HDAT1);
 
-	DEBUGOUT("VS1053b: Audio info\r\n");
+	DEBUGOUT("VS1053b: Audio info\n");
 
 	AudioInfo* retVal = aInfo;
 	retVal->type = UNKNOWN;
@@ -788,7 +788,7 @@ void VS1053::getAudioInfo(AudioInfo* aInfo) {
 		// audio  is mp3
 		retVal->type = MP3;
 
-		DEBUGOUT("VS1053b:   Audio is mp3\r\n");
+		DEBUGOUT("VS1053b:   Audio is mp3\n");
 		retVal->ext.mp3.id = (MP3_ID) ((hdat1 >> 3) & 0x0003);
 		switch ((hdat1 >> 1) & 0x0003) {
 		case 3:
@@ -816,15 +816,15 @@ void VS1053::getAudioInfo(AudioInfo* aInfo) {
 		retVal->ext.mp3.original = (hdat0 >> 2) & 0x0001;
 		retVal->ext.mp3.emphasis = (hdat0 >> 0) & 0x0003;
 
-		DEBUGOUT("VS1053b:  ID: %i, Layer: %i, Samplerate: %i, Mode: %i\r\n", retVal->ext.mp3.id, retVal->ext.mp3.layer, retVal->ext.mp3.kSampleRate, retVal->ext.mp3.mode);
+		DEBUGOUT("VS1053b:  ID: %i, Layer: %i, Samplerate: %i, Mode: %i\n", retVal->ext.mp3.id, retVal->ext.mp3.layer, retVal->ext.mp3.kSampleRate, retVal->ext.mp3.mode);
 	}
 
 	// read byteRate
 	uint16_t byteRate = wram_read(para_byteRate);
 	retVal->kBitRate = (byteRate * 8) / 1000;
-	DEBUGOUT("VS1053b:  BitRate: %i kBit/s\r\n", retVal->kBitRate);
+	DEBUGOUT("VS1053b:  BitRate: %i kBit/s\n", retVal->kBitRate);
 
 	// decode time
 	retVal->decodeTime = sci_read(SCI_DECODE_TIME);
-	DEBUGOUT("VS1053b:  Decodetime: %i s\r\n", retVal->decodeTime);
+	DEBUGOUT("VS1053b:  Decodetime: %i s\n", retVal->decodeTime);
 }
