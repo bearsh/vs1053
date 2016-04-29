@@ -497,6 +497,7 @@ protected:
 	unsigned char bufferGetByte(void);
 	void bufferReset(void);
 	inline void bufferPostFillEvent(void);
+	void bufferWriteToChip(void);
 	void dataRequestHandler(void);
 	void dataRequestInterruptHandler(void);
 };
