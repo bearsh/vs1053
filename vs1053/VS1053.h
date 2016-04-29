@@ -401,6 +401,20 @@ public:
 	 */
 	void bufferUpdateRPtr(size_t delta);
 
+	/**
+	 *
+	 */
+	void bufferRegisterReadNotification(void (*cb)(void)) {
+		bufferFillEvent = mbed::util::FunctionPointer0<void>(cb).bind();
+	}
+	/**
+	 *
+	 */
+	template<typename T>
+	void bufferRegisterReadNotification(T *object, void (T::*member)(void)) {
+		bufferFillEvent = mbed::util::FunctionPointer0<void>(object, member).bind();
+	}
+
 	/** Start playing audio from buffer.
 	 *
 	 */
@@ -437,6 +451,8 @@ protected:
 	char* buffer_rptr;
 	char* buffer_wptr;
 	size_t buffer_size;
+	minar::callback_t bufferFillEvent;
+	bool bufferFillEventPosted;
 
 	// variables to save
 	// volume, values in db
@@ -480,6 +496,7 @@ protected:
 	void changeBass(void);
 	unsigned char bufferGetByte(void);
 	void bufferReset(void);
+	inline void bufferPostFillEvent(void);
 	void dataRequestHandler(void);
 	void dataRequestInterruptHandler(void);
 };

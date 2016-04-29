@@ -119,6 +119,8 @@ VS1053::VS1053(PinName mosi, PinName miso, PinName sck, PinName cs, PinName rst,
 		interrupt_dreq(dreq),
 		buffer(buf),
 		buffer_size(buf_size),
+		bufferFillEvent(),
+		bufferFillEventPosted(false),
 		data_request_event(mbed::util::FunctionPointer0<void>(this, &VS1053::dataRequestHandler).bind())
 {
 	volume = DEFAULT_VOLUME;
@@ -567,6 +569,16 @@ void VS1053::bufferUpdateWPtr(size_t delta) {
 	if (buffer_wptr >= buffer + buffer_size) {
 		buffer_wptr -= buffer_size;
 	}
+	bufferFillEventPosted = false;
+}
+
+inline void VS1053::bufferPostFillEvent(void) {
+	if (!bufferFillEventPosted) {
+		bufferFillEventPosted = true;
+		if (bufferFillEvent) {
+			minar::Scheduler::postCallback(bufferFillEvent).tolerance(minar::milliseconds(1));
+		}
+	}
 }
 
 uint8_t VS1053::bufferGetByte(void) {
@@ -577,6 +589,7 @@ uint8_t VS1053::bufferGetByte(void) {
 			buffer_rptr = buffer;
 		}
 	}
+	bufferPostFillEvent();
 	return retVal;
 }
 
@@ -597,6 +610,7 @@ void VS1053::bufferUpdateRPtr(size_t delta) {
 	if (buffer_rptr >= buffer + buffer_size) {
 		buffer_rptr -= buffer_size;
 	}
+	bufferPostFillEvent();
 }
 
 bool VS1053::bufferSetByte(char c) {
@@ -605,6 +619,7 @@ bool VS1053::bufferSetByte(char c) {
 		if (buffer_wptr >= buffer + buffer_size) {
 			buffer_wptr = buffer;
 		}
+		bufferFillEventPosted = false;
 		return true;
 	}
 	return false;
@@ -618,6 +633,7 @@ bool VS1053::bufferPutStream(const char *s, size_t length) {
 				buffer_wptr = buffer;
 			}
 		}
+		bufferFillEventPosted = false;
 		return true;
 	}
 	return false;
