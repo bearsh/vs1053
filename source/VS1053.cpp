@@ -784,7 +784,7 @@ void VS1053::getAudioInfo(AudioInfo* aInfo) {
 	} else if (hdat1 == 0x4F76) {
 		// audio  is OGG VORBIS
 		retVal->type = OGG_VORBIS;
-	} else if (hdat1 >= 0xFFE0 && hdat1 <= 0xFFFF) {
+	} else if (hdat1 >= 0xFFE0) { // && hdat1 <= 0xFFFF (16bit var...)
 		// audio  is mp3
 		retVal->type = MP3;
 
