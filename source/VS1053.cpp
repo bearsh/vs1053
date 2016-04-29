@@ -697,6 +697,8 @@ void VS1053::dataRequestInterruptHandler(void) {
 void VS1053::play(void) {
 	mode = PLAY;
 	interrupt_enable();
+	bufferFillEventPosted = false;
+	bufferPostFillEvent();
 	minar::Scheduler::postCallback(data_request_event);
 	DEBUGOUT("VS1053b: Play.\r\n");
 }
