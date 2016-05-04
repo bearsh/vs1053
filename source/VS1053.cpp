@@ -365,7 +365,8 @@ void VS1053::terminateStream(void) {
 		DEBUGOUT("VS1053b: SCI MODE = %#x, SM_CANCEL = %#x\n", sciModeByte, sciModeByte & SM_CANCEL);
 		sci_write(SCI_DECODE_TIME, 0x0000);
 	} else {
-		DEBUGOUT("VS1053b: SM CANCEL hasn't cleared after sending 2048 bytes, do software reset\n");DEBUGOUT("VS1053b: SCI MODE = %#x, SM_CANCEL = %#x\n", sciModeByte, sciModeByte & SM_CANCEL);
+		DEBUGOUT("VS1053b: SM CANCEL hasn't cleared after sending 2048 bytes, do software reset\n");
+		DEBUGOUT("VS1053b: SCI MODE = %#x, SM_CANCEL = %#x\n", sciModeByte, sciModeByte & SM_CANCEL);
 		initialize();
 	}
 }
@@ -541,7 +542,8 @@ void VS1053::changeBass(void) {
 	sci_write(SCI_BASS, bassCalced);
 
 	DEBUGOUT("VS1053b: Change bass settings to:\n");
-	DEBUGOUT("VS1053b: --Treble: Amplitude=%i, Frequency=%i\n", getTrebleAmplitude(), getTrebleFrequency()); DEBUGOUT("VS1053b: --Bass:   Amplitude=%i, Frequency=%i\n", getBassAmplitude(), getBassFrequency());
+	DEBUGOUT("VS1053b: --Treble: Amplitude=%i, Frequency=%i\n", getTrebleAmplitude(), getTrebleFrequency());
+	DEBUGOUT("VS1053b: --Bass:   Amplitude=%i, Frequency=%i\n", getBassAmplitude(), getBassFrequency());
 }
 
 /*===================================================================
@@ -748,10 +750,12 @@ void VS1053::stop(void) {
 		endFillByte = endFillByte ^ 0x00FF;
 		for (int n = 0; n < 2052; n++)
 			sdi_write(endFillByte);
-		DEBUGOUT("VS1053b: Song sucessfully stopped.\n"); DEBUGOUT("VS1053b: SCI MODE = %#x, SM_CANCEL = %#x\n", sciModeByte, sciModeByte & SM_CANCEL);
+		DEBUGOUT("VS1053b: Song sucessfully stopped.\n");
+		DEBUGOUT("VS1053b: SCI MODE = %#x, SM_CANCEL = %#x\n", sciModeByte, sciModeByte & SM_CANCEL);
 		sci_write(SCI_DECODE_TIME, 0x0000);
 	} else {
-		DEBUGOUT("VS1053b: SM CANCEL hasn't cleared after sending 2048 bytes, do software reset\n"); DEBUGOUT("VS1053b: SCI MODE = %#x, SM_CANCEL = %#x\n", sciModeByte, sciModeByte & SM_CANCEL);
+		DEBUGOUT("VS1053b: SM CANCEL hasn't cleared after sending 2048 bytes, do software reset\n");
+		DEBUGOUT("VS1053b: SCI MODE = %#x, SM_CANCEL = %#x\n", sciModeByte, sciModeByte & SM_CANCEL);
 		initialize();
 	}
 
@@ -816,7 +820,8 @@ void VS1053::getAudioInfo(AudioInfo* aInfo) {
 		retVal->ext.mp3.original = (hdat0 >> 2) & 0x0001;
 		retVal->ext.mp3.emphasis = (hdat0 >> 0) & 0x0003;
 
-		DEBUGOUT("VS1053b:  ID: %i, Layer: %i, Samplerate: %i, Mode: %i\n", retVal->ext.mp3.id, retVal->ext.mp3.layer, retVal->ext.mp3.kSampleRate, retVal->ext.mp3.mode);
+		DEBUGOUT("VS1053b:  ID: %i, Layer: %i, Samplerate: %i, Mode: %i\n", retVal->ext.mp3.id,
+				retVal->ext.mp3.layer, retVal->ext.mp3.kSampleRate, retVal->ext.mp3.mode);
 	}
 
 	// read byteRate
