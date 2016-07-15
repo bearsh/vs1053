@@ -121,14 +121,14 @@ VS1053::VS1053(PinName mosi, PinName miso, PinName sck, PinName cs, PinName rst,
 		buffer_size(buf_size),
 		bufferFillEvent(),
 		bufferFillEventPosted(false),
+		balance(0),
+		volume(VOLUME_MAX - DEFAULT_VOLUME),
+		sb_amplitude(DEFAULT_BASS_AMPLITUDE),
+		sb_freqlimit(DEFAULT_BASS_FREQUENCY),
+		st_amplitude(DEFAULT_TREBLE_AMPLITUDE),
+		st_freqlimit(DEFAULT_TREBLE_FREQUENCY),
 		data_request_event(mbed::util::FunctionPointer0<void>(this, &VS1053::dataRequestHandler).bind())
 {
-	volume = DEFAULT_VOLUME;
-	balance = DEFAULT_BALANCE_DIFERENCE_LEFT_RIGHT;
-	sb_amplitude = DEFAULT_BASS_AMPLITUDE;
-	sb_freqlimit = DEFAULT_BASS_FREQUENCY;
-	st_amplitude = DEFAULT_TREBLE_AMPLITUDE;
-	st_freqlimit = DEFAULT_TREBLE_FREQUENCY;
 	interrupt_dreq.mode(PullDown);
 	interrupt_disable();
 	bufferReset();
