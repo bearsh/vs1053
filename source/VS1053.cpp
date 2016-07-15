@@ -567,9 +567,11 @@ size_t VS1053::bufferGetWPtr(char **wptr, bool *more_available) {
 }
 
 void VS1053::bufferUpdateWPtr(size_t delta) {
-	buffer_wptr += delta;
-	if (buffer_wptr >= buffer + buffer_size) {
-		buffer_wptr -= buffer_size;
+	if (delta != 0) {
+		buffer_wptr += delta;
+		if (buffer_wptr >= buffer + buffer_size) {
+			buffer_wptr -= buffer_size;
+		}
 	}
 	bufferFillEventPosted = false;
 }
