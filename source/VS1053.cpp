@@ -222,8 +222,6 @@ void VS1053::sdi_initialise(void) {
 }
 
 void VS1053::sci_write(uint8_t address, uint16_t data) {
-	// TODO disable all interrupts
-	__disable_irq();
 	sci_en();                                //enables SCI/disables SDI
 
 	while (!pin_dreq)
@@ -235,9 +233,6 @@ void VS1053::sci_write(uint8_t address, uint16_t data) {
 
 	sci_dis();                                //enables SDI/disables SCI
 	wait_us(5);
-
-	// TODO enable all interrupts
-	__enable_irq();
 }
 
 void VS1053::sdi_write(uint8_t datum) {
@@ -251,9 +246,6 @@ void VS1053::sdi_write(uint8_t datum) {
 }
 
 uint16_t VS1053::sci_read(uint16_t address) {
-	// TODO disable all interrupts
-	__disable_irq();
-
 	cs_low();                                //enables SCI/disables SDI
 
 	while (!pin_dreq) {;}                          //wait unitl data request is high
@@ -264,9 +256,6 @@ uint16_t VS1053::sci_read(uint16_t address) {
 	received |= port_spi.write(0x00);            //write out dummy byte
 
 	cs_high();                                //enables SDI/disables SCI
-
-	// TODO enable all interrupts
-	__enable_irq();
 	return received;                        //return received word
 }
 
@@ -725,7 +714,6 @@ void VS1053::pause(void) {
 void VS1053::stop(void) {
 	mode = STOP;
 	interrupt_disable();
-	__disable_irq();
 	DEBUGOUT("VS1053b: Song stoping..\n");
 
 	// set SCI MODE bit SM CANCEL
@@ -767,7 +755,6 @@ void VS1053::stop(void) {
 	}
 
 	bufferReset();
-	__enable_irq();
 }
 
 void VS1053::getAudioInfo(AudioInfo* aInfo) {
