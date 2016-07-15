@@ -441,37 +441,42 @@ bool VS1053::initialize(void) {
 	return true;
 }
 
-void VS1053::setVolume(float vol) {
-	if (vol > -0.5)
-		volume = -0.5;
-	else
-		volume = vol;
+void VS1053::setVolume(uint8_t vol) {
+	if (vol > VOLUME_MAX) vol = VOLUME_MAX;
+	// vs1053's max vol is 0, min 0xFE
+	volume = VOLUME_MAX - vol;
 
 	changeVolume();
 }
 
-float VS1053::getVolume(void) {
-	return volume;
+uint8_t VS1053::getVolume(void) {
+	return VOLUME_MAX - volume;
 }
 
-void VS1053::setBalance(float bal) {
+void VS1053::setBalance(int16_t bal) {
+	if (balance > VOLUME_MAX) bal = VOLUME_MAX;
+	if (balance < -VOLUME_MAX) bal = -VOLUME_MAX;
 	balance = bal;
 
 	changeVolume();
 }
 
-float VS1053::getBalance(void) {
+int16_t VS1053::getBalance(void) {
 	return balance;
 }
 
 void VS1053::changeVolume(void) {
 	// volume calculation
-	uint16_t volCalced = (((char) (volume / -0.5f)) << 8)
-			+ (char) ((volume - balance) / -0.5f);
+	uint16_t volCalced;
+	if (balance > 0) {
+		volCalced = (volume << 8) | (volume - balance);
+	} else {
+		volCalced = ((volume + balance) << 8) | volume;
+	}
 
 	sci_write(SCI_VOL, volCalced);
 
-	DEBUGOUT("VS1053b: Change volume to %#x (%f, Balance = %f)\n", volCalced, volume, balance);
+	DEBUGOUT("VS1053b: Change volume to %#x (%u, Balance = %i)\n", volCalced, volume, balance);
 }
 
 int VS1053::getTrebleFrequency(void) {

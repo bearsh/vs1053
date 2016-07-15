@@ -67,8 +67,8 @@ extern RawSerial ser;
 #endif
 
 
-#define DEFAULT_BALANCE_DIFERENCE_LEFT_RIGHT          0.0f
-#define DEFAULT_VOLUME                              -40.0f
+#define DEFAULT_BALANCE                               0
+#define DEFAULT_VOLUME                 VOLUME_minus40db
 #define DEFAULT_BASS_AMPLITUDE                        5        //   0 -    15 dB
 #define DEFAULT_BASS_FREQUENCY                      100        //  20 -   150 Hz
 #define DEFAULT_TREBLE_AMPLITUDE                      0        //  -8 -     7 dB
@@ -189,6 +189,24 @@ typedef struct AudioInfo {
 class VS1053 {
 
 public:
+	enum Volume {
+		VOLUME_MIN = 0,
+		VOLUME_minus127db = 0,
+		VOLUME_minus120db = 14,
+		VOLUME_minus110db = 34,
+		VOLUME_minus100db = 54,
+		VOLUME_minus90db = 74,
+		VOLUME_minus80db = 94,
+		VOLUME_minus70db = 114,
+		VOLUME_minus60db = 134,
+		VOLUME_minus50db = 154,
+		VOLUME_minus40db = 174,
+		VOLUME_minus30db = 194,
+		VOLUME_minus20db = 214,
+		VOLUME_minus10db = 234,
+		VOLUME_0db = 254,
+		VOLUME_MAX = 254
+	};
 	/** Create a vs1053b object.
 	 *
 	 * @param mosi
@@ -234,30 +252,31 @@ public:
 	/** Set the volume.
 	 *
 	 * @param volume
-	 *   Volume -0.5dB, -1.0dB, .. -64.0dB.
+	 *   Volume   0 ... 254
+	 *          min ... max
 	 */
-	void setVolume(float volume = DEFAULT_VOLUME);
+	void setVolume(uint8_t volume = DEFAULT_VOLUME);
 
 	/** Get the volume.
 	 *
 	 * @return
-	 *   Return the volume in dB.
+	 *   Return the volume in steps.
 	 */
-	float getVolume();
+	uint8_t getVolume();
 
 	/** Set the balance - volume difference between left-right.
 	 *
 	 * @param balance
-	 *   Difference in dB.
+	 *   Difference in Volume steps.
 	 */
-	void setBalance(float balance = DEFAULT_BALANCE_DIFERENCE_LEFT_RIGHT);
+	void setBalance(int16_t balance = DEFAULT_BALANCE);
 
 	/** Get the balance - volume difference between left-right.
 	 *
 	 * @return
-	 *   Difference in dB.
+	 *   Difference in steps.
 	 */
-	float getBalance();
+	int16_t getBalance();
 
 	/** Get the treble frequency limit.
 	 *
@@ -456,8 +475,8 @@ protected:
 
 	// variables to save
 	// volume, values in db
-	float balance;
-	float volume;
+	int16_t balance;
+	uint8_t volume;
 	// bass enhancer settings
 	int sb_amplitude;
 	int sb_freqlimit;
